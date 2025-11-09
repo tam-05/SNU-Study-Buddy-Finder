@@ -879,20 +879,94 @@ button[data-testid="baseButton-header"]:hover {
 </style>
 """, unsafe_allow_html=True)
 
+def train_model_if_needed():
+    """Train model if it doesn't exist"""
+    import os
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.cluster import KMeans
+    from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
+    
+    # Check both src directory and root directory
+    model_paths = ['src/buddy_model.joblib', 'buddy_model.joblib']
+    if any(os.path.exists(p) for p in model_paths):
+        return
+    
+    with st.spinner('🔄 Training model for the first time... This will take a moment.'):
+        # Load data - try both paths
+        data_paths = ['data/students.csv', '../data/students.csv']
+        df = None
+        for path in data_paths:
+            if os.path.exists(path):
+                df = pd.read_csv(path)
+                break
+        
+        if df is None:
+            st.error("❌ Data file not found!")
+            st.stop()
+            
+        df_clean = df.copy()
+        
+        # Normalize numerical features
+        scaler = StandardScaler()
+        numerical_cols = ['teamwork_preference', 'introversion_extraversion', 
+                         'books_read_past_year', 'weekly_hobby_hours',
+                         'risk_taking', 'conscientiousness', 'open_to_new_experiences']
+        
+        df_clean[numerical_cols] = scaler.fit_transform(df_clean[numerical_cols])
+        
+        # One-hot encode categorical features
+        categorical_cols = ['club_top1', 'club_top2', 'hobby_top1', 'hobby_top2']
+        df_encoded = pd.get_dummies(df_clean, columns=categorical_cols, prefix=categorical_cols)
+        
+        # Clustering
+        feature_cols = [col for col in df_encoded.columns if col not in ['student_id']]
+        X = df_encoded[feature_cols].values
+        
+        kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
+        df_clean['Cluster'] = kmeans.fit_predict(X)
+        
+        # Calculate similarity matrix
+        cosine_sim = cosine_similarity(X)
+        euclidean_sim = 1 / (1 + euclidean_distances(X))
+        similarity_matrix = 0.6 * cosine_sim + 0.4 * euclidean_sim
+        
+        # Save artifacts
+        artifacts = {
+            'df_clean': df_clean,
+            'similarity_matrix': similarity_matrix,
+            'kmeans_model': kmeans,
+            'scaler': scaler,
+            'feature_cols': feature_cols,
+            'model_version': '2.0_improved',
+            'n_features': len(feature_cols)
+        }
+        
+        joblib.dump(artifacts, 'src/buddy_model.joblib')
+        st.success('✅ Model trained successfully!')
+
 @st.cache_resource
 def load_model_artifacts():
     """Load pre-trained improved model and data"""
-    try:
-        import joblib
-        artifacts = joblib.load('buddy_model.joblib')
-        similarity_matrix = artifacts['similarity_matrix']
-        model_version = artifacts.get('model_version', '2.0_improved')
-        # Removed success message to clean up UI
-        return artifacts, similarity_matrix
-    except FileNotFoundError:
-        st.error("⚠️ Model files not found. Please run the improved model training first.")
-        st.info("💡 Run: `python models/improved_train.py` or execute the improved_project.ipynb notebook")
+    import os
+    
+    train_model_if_needed()
+    
+    # Try to load from src directory first, then root
+    model_paths = ['src/buddy_model.joblib', 'buddy_model.joblib']
+    artifacts = None
+    
+    for path in model_paths:
+        if os.path.exists(path):
+            artifacts = joblib.load(path)
+            break
+    
+    if artifacts is None:
+        st.error("❌ Could not load model file!")
         st.stop()
+    
+    similarity_matrix = artifacts['similarity_matrix']
+    model_version = artifacts.get('model_version', '2.0_improved')
+    return artifacts, similarity_matrix
 
 def get_compatibility_badge(score):
     """Return HTML badge based on compatibility score"""

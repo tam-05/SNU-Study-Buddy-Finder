@@ -32,15 +32,26 @@ app.add_middleware(
 )
 
 # Load model artifacts
-try:
-    model_artifacts = joblib.load('buddy_model.joblib')
-    similarity_matrix = model_artifacts['similarity_matrix']
-    df_clean = model_artifacts['df_clean']
-    model_version = model_artifacts.get('model_version', '2.0_improved')
-    print(f"✅ Model loaded successfully (version: {model_version})")
-except FileNotFoundError:
+import os
+
+model_paths = ['src/buddy_model.joblib', 'buddy_model.joblib']
+model_artifacts = None
+
+for path in model_paths:
+    if os.path.exists(path):
+        try:
+            model_artifacts = joblib.load(path)
+            similarity_matrix = model_artifacts['similarity_matrix']
+            df_clean = model_artifacts['df_clean']
+            model_version = model_artifacts.get('model_version', '2.0_improved')
+            print(f"✅ Model loaded successfully from {path} (version: {model_version})")
+            break
+        except Exception as e:
+            print(f"❌ Error loading model from {path}: {e}")
+            continue
+
+if model_artifacts is None:
     print("❌ Model file not found. Please run the improved model training first.")
-    model_artifacts = None
     similarity_matrix = None
     df_clean = None
     model_version = "unknown"
