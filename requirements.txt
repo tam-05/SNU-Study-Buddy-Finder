@@ -1,17 +1,17 @@
-# Core ML Libraries
-pandas==2.1.4
-numpy==1.26.2
-scikit-learn==1.3.2
-joblib==1.3.2
+# Core ML Libraries - Updated for Python 3.13 compatibility
+pandas>=2.2.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+joblib>=1.3.2
 
 # API Framework
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-pydantic==2.5.3
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.6.0
 
 # Streamlit App
-streamlit==1.30.0
-plotly==5.18.0
+streamlit>=1.30.0
+plotly>=5.18.0
 
 # Utilities
-python-multipart==0.0.6
+python-multipart>=0.0.6
