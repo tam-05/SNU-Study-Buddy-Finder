@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 
 # Page configuration
 st.set_page_config(
-    page_title="SNU Study Buddy Finder",
+    page_title="Study Buddy Finder",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -887,7 +887,7 @@ def train_model_if_needed():
     from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
     
     # Check both src directory and root directory
-    model_paths = ['src/buddy_model.joblib', 'buddy_model.joblib']
+    model_paths = ['buddy_model.joblib', 'src/buddy_model.joblib']
     if any(os.path.exists(p) for p in model_paths):
         return
     
@@ -906,20 +906,42 @@ def train_model_if_needed():
             
         df_clean = df.copy()
         
+        # First, one-hot encode categorical features BEFORE normalization
+        categorical_cols = ['club_top1', 'club_top2', 'hobby_top1', 'hobby_top2']
+        df_encoded = pd.get_dummies(df_clean, columns=categorical_cols, prefix=categorical_cols)
+        
         # Normalize numerical features
         scaler = StandardScaler()
         numerical_cols = ['teamwork_preference', 'introversion_extraversion', 
                          'books_read_past_year', 'weekly_hobby_hours',
                          'risk_taking', 'conscientiousness', 'open_to_new_experiences']
         
-        df_clean[numerical_cols] = scaler.fit_transform(df_clean[numerical_cols])
+        df_encoded[numerical_cols] = scaler.fit_transform(df_encoded[numerical_cols])
         
-        # One-hot encode categorical features
-        categorical_cols = ['club_top1', 'club_top2', 'hobby_top1', 'hobby_top2']
-        df_encoded = pd.get_dummies(df_clean, columns=categorical_cols, prefix=categorical_cols)
+        # Clustering - exclude non-numeric columns
+        exclude_cols = ['student_id', 'timestamp', 'age', 'height_cm', 'weight_kg', 
+                       'cuisine_top1', 'cuisine_top2', 'cuisine_top3', 'spice_tolerance',
+                       'dietary_pref', 'eating_out_per_week', 'food_budget_per_meal',
+                       'sweet_tooth_level', 'tea_vs_coffee', 'movie_genre_top1', 
+                       'movie_genre_top2', 'movie_genre_top3', 'series_genre_top1',
+                       'series_genre_top2', 'series_genre_top3', 'content_lang_top1',
+                       'content_lang_top2', 'content_lang_top3', 'ott_top1', 'ott_top2',
+                       'ott_top3', 'binge_freq_per_week', 'screen_time_hours_per_week',
+                       'gaming_days_per_week', 'gaming_hours_per_week', 'game_genre_top1',
+                       'game_genre_top2', 'game_genre_top3', 'gaming_platform_top1',
+                       'gaming_platform_top2', 'gaming_platform_top3', 'esports_viewing',
+                       'social_platform_top1', 'social_platform_top2', 'social_platform_top3',
+                       'daily_social_media_minutes', 'primary_content_type', 
+                       'content_creation_freq', 'music_genre_top1', 'music_genre_top2',
+                       'music_genre_top3', 'listening_hours_per_day', 'music_lang_top1',
+                       'music_lang_top2', 'live_concerts_past_year', 'reads_books',
+                       'book_genre_top1', 'book_genre_top2', 'book_genre_top3',
+                       'fashion_spend_per_month', 'shopping_mode_pref', 
+                       'ethical_shopping_importance', 'travel_freq_per_year',
+                       'travel_type_top1', 'travel_type_top2', 'travel_type_top3',
+                       'budget_per_trip', 'travel_planning_pref']
         
-        # Clustering
-        feature_cols = [col for col in df_encoded.columns if col not in ['student_id', 'timestamp']]
+        feature_cols = [col for col in df_encoded.columns if col not in exclude_cols]
         X = df_encoded[feature_cols].values
         
         kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
@@ -937,12 +959,11 @@ def train_model_if_needed():
             'kmeans_model': kmeans,
             'scaler': scaler,
             'feature_cols': feature_cols,
-            'model_version': '2.0_improved',
+            'model_version': 'improved',
             'n_features': len(feature_cols)
         }
         
-        joblib.dump(artifacts, 'src/buddy_model.joblib')
-        st.success('✅ Model trained successfully!')
+        joblib.dump(artifacts, 'buddy_model.joblib')
 
 @st.cache_resource
 def load_model_artifacts():
@@ -951,8 +972,8 @@ def load_model_artifacts():
     
     train_model_if_needed()
     
-    # Try to load from src directory first, then root
-    model_paths = ['src/buddy_model.joblib', 'buddy_model.joblib']
+    # Try to load from root directory first, then src directory
+    model_paths = ['buddy_model.joblib', 'src/buddy_model.joblib']
     artifacts = None
     
     for path in model_paths:
@@ -1049,7 +1070,7 @@ def main():
     # Header with model info
     st.markdown(f"""
     <div class="app-header">
-        <h1 class="main-title">🎓 SNU STUDY BUDDY FINDER</h1>
+        <h1 class="main-title">🎓 STUDY BUDDY FINDER</h1>
         <p class="sub-title">{total_students} Students • {total_clusters} Clusters • {n_features} Features</p>
         <p class="sub-title">AI-Powered Matching</p>
     </div>
@@ -1504,7 +1525,7 @@ def main():
     st.markdown("---")
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #3E2723 0%, #5D4037 100%); color: #FFF8E1; text-align: center; padding: 2rem; margin: 2rem -2rem -2rem -2rem; border-top: 4px solid #A1887F; font-family: 'Poppins', sans-serif; box-shadow: 0 -4px 12px rgba(62, 39, 35, 0.2);">
-        <p style="margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px;">🎓 SNU STUDY BUDDY FINDER</p>
+        <p style="margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px;">🎓 STUDY BUDDY FINDER</p>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; opacity: 0.95;">{n_features} Features • Hybrid Similarity Algorithm</p>
     </div>
     """, unsafe_allow_html=True)

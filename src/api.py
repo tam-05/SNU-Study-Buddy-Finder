@@ -1,6 +1,6 @@
 """
 =============================================================================
-SNU STUDY BUDDY FINDER - FASTAPI BACKEND
+STUDY BUDDY FINDER - FASTAPI BACKEND
 =============================================================================
 RESTful API for study buddy recommendations
 =============================================================================
@@ -17,7 +17,7 @@ from datetime import datetime
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="SNU Study Buddy Finder API",
+    title="Study Buddy Finder API",
     description="AI-powered study buddy recommendation system",
     version="1.0.0"
 )
@@ -136,7 +136,7 @@ def get_student_profile(student_idx: int) -> StudentProfile:
 async def root():
     """Root endpoint"""
     return {
-        "message": "SNU Study Buddy Finder API",
+        "message": "Study Buddy Finder API",
         "version": "1.0.0",
         "status": "active" if model_artifacts else "model not loaded",
         "endpoints": {
@@ -288,6 +288,6 @@ async def list_students(skip: int = 0, limit: int = 100):
 
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 Starting SNU Study Buddy Finder API...")
+    print("🚀 Starting Study Buddy Finder API...")
     print("📖 API Documentation: http://localhost:8000/docs")
     uvicorn.run(app, host="0.0.0.0", port=8000)
