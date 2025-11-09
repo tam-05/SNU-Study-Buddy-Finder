@@ -19,6 +19,7 @@ st.set_page_config(
 # Modern Black & White Theme CSS with Poppins Font
 st.markdown("""
 <style>
+    /* CSS Version 2.0 - Dark Mode Fix */
     /* Import Google Fonts - Poppins */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
     
@@ -44,6 +45,109 @@ st.markdown("""
     
     /* Hide Streamlit footer only */
     footer {visibility: hidden;}
+    
+    /* DARK THEME SUPPORT - Streamlit adds stApp class */
+    /* When Streamlit is in dark mode, override all light colors */
+    
+    /* Main containers in dark mode */
+    .stApp[data-theme="dark"] .main,
+    .stApp[class*="dark"] .main,
+    body[class*="dark"] .main {
+        background: #0E1117 !important;
+    }
+    
+    .stApp[data-theme="dark"] .block-container,
+    .stApp[class*="dark"] .block-container,
+    body[class*="dark"] .block-container {
+        background: #0E1117 !important;
+    }
+    
+    /* Section cards in dark mode */
+    .stApp[data-theme="dark"] .section-card,
+    .stApp[class*="dark"] .section-card,
+    body[class*="dark"] .section-card {
+        background: #262730 !important;
+        border-color: #464852 !important;
+        color: #FAFAFA !important;
+    }
+    
+    /* Metric cards in dark mode */
+    .stApp[data-theme="dark"] .metric-card,
+    .stApp[class*="dark"] .metric-card,
+    body[class*="dark"] .metric-card {
+        background: #1E1E1E !important;
+        border-color: #464852 !important;
+    }
+    
+    .stApp[data-theme="dark"] .metric-label,
+    .stApp[class*="dark"] .metric-label,
+    body[class*="dark"] .metric-label {
+        color: #B0B0B0 !important;
+    }
+    
+    .stApp[data-theme="dark"] .metric-value,
+    .stApp[class*="dark"] .metric-value,
+    body[class*="dark"] .metric-value {
+        color: #FAFAFA !important;
+    }
+    
+    /* Buddy cards in dark mode */
+    .stApp[data-theme="dark"] .buddy-card,
+    .stApp[class*="dark"] .buddy-card,
+    body[class*="dark"] .buddy-card {
+        background: #262730 !important;
+        border-color: #464852 !important;
+    }
+    
+    /* Stat boxes in dark mode */
+    .stApp[data-theme="dark"] .stat-box,
+    .stApp[class*="dark"] .stat-box,
+    body[class*="dark"] .stat-box {
+        background: linear-gradient(135deg, #262730 0%, #2D2D3A 100%) !important;
+        border-color: #464852 !important;
+        color: #FAFAFA !important;
+    }
+    
+    .stApp[data-theme="dark"] .stat-label,
+    .stApp[class*="dark"] .stat-label,
+    body[class*="dark"] .stat-label {
+        color: #CCCCCC !important;
+    }
+    
+    .stApp[data-theme="dark"] .stat-number,
+    .stApp[class*="dark"] .stat-number,
+    body[class*="dark"] .stat-number {
+        color: #FAFAFA !important;
+    }
+    
+    /* Section headers in dark mode */
+    .stApp[data-theme="dark"] .section-header,
+    .stApp[class*="dark"] .section-header,
+    body[class*="dark"] .section-header {
+        color: #FAFAFA !important;
+        border-bottom-color: #8D6E63 !important;
+    }
+    
+    /* Profile elements in dark mode */
+    .stApp[data-theme="dark"] .profile-id,
+    .stApp[class*="dark"] .profile-id,
+    body[class*="dark"] .profile-id {
+        color: #FAFAFA !important;
+    }
+    
+    /* All h4 elements in dark mode */
+    .stApp[data-theme="dark"] h4,
+    .stApp[class*="dark"] h4,
+    body[class*="dark"] h4 {
+        color: #FAFAFA !important;
+    }
+    
+    /* All paragraph text in section cards */
+    .stApp[data-theme="dark"] .section-card p,
+    .stApp[class*="dark"] .section-card p,
+    body[class*="dark"] .section-card p {
+        color: #FAFAFA !important;
+    }
     
     /* Main container - Warm cream background */
     .main {
@@ -105,11 +209,67 @@ st.markdown("""
         border-color: #8D6E63;
     }
     
+    /* Force all text in section cards to be black - CRITICAL FOR DARK MODE */
+    .section-card, 
+    .section-card *:not(.profile-header):not(.profile-header *),
+    .section-card h1,
+    .section-card h2, 
+    .section-card h3,
+    .section-card h4,
+    .section-card h5,
+    .section-card h6,
+    .section-card p,
+    .section-card span,
+    .section-card div,
+    .section-card li,
+    .section-card ul {
+        color: #000000 !important;
+    }
+    
+    /* Except for elements that should stay white */
+    .section-card .profile-header,
+    .section-card .profile-header *,
+    .stat-box,
+    .stat-box * {
+        color: #FFF8E1 !important;
+    }
+    
+    /* Fix for buddy card content */
+    .buddy-card,
+    .buddy-card *:not(.badge-excellent):not(.badge-veryhigh):not(.badge-high):not(.badge-medium):not(.badge-mediumlow):not(.badge-low):not(.badge-verylow):not(.badge-minimal) {
+        color: #000000 !important;
+    }
+    
+    /* Fix for metric cards */
+    .metric-card,
+    .metric-card * {
+        color: #000000 !important;
+    }
+    
+    /* Override Streamlit's default text colors in main area */
+    .main .stMarkdown,
+    .main .stMarkdown *,
+    .main p,
+    .main span:not([class*="badge"]),
+    .main div:not(.stat-box):not(.stat-box *) {
+        color: #000000 !important;
+    }
+    
+    /* Plotly chart text - force dark color */
+    .js-plotly-plot .plotly text {
+        fill: #000000 !important;
+    }
+    
+    .js-plotly-plot .plotly .xtick text,
+    .js-plotly-plot .plotly .ytick text {
+        fill: #000000 !important;
+    }
+    
     /* Section Headers */
     .section-header {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #3E2723;
+        color: #000000 !important;
         margin: 0 0 1rem 0;
         padding-bottom: 0.5rem;
         border-bottom: 3px solid #8D6E63;
@@ -133,6 +293,7 @@ st.markdown("""
         font-weight: 800;
         margin: 0;
         font-family: 'Poppins', sans-serif;
+        color: #FFFFFF !important;
     }
     
     /* Metric Cards - Warm with Floating Effect */
@@ -157,7 +318,7 @@ st.markdown("""
     .metric-label {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6D4C41;
+        color: #000000 !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-bottom: 0.3rem;
@@ -167,7 +328,7 @@ st.markdown("""
     .metric-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #3E2723;
+        color: #000000 !important;
         font-family: 'Poppins', sans-serif;
     }
     
@@ -323,6 +484,7 @@ st.markdown("""
         font-size: 2.5rem;
         font-weight: 800;
         margin: 0.5rem 0;
+        color: #FFFFFF !important;
     }
     
     .stat-label {
@@ -331,6 +493,7 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 1px;
         opacity: 0.9;
+        color: #FFFFFF !important;
     }
     
     /* Sidebar - Warm Brown Gradient */
@@ -1217,16 +1380,16 @@ def main():
             ),
             text=list(traits.values()),
             textposition='outside',
-            textfont=dict(size=14, color='#3E2723', family='Poppins', weight=700)
+            textfont=dict(size=14, color='#000000', family='Poppins', weight=700)
         ))
         fig_traits.update_layout(
-            xaxis=dict(title="Score", range=[0, 5.5], showgrid=True, gridcolor='#FFE0B2'),
-            yaxis=dict(title=""),
+            xaxis=dict(title="Score", range=[0, 5.5], showgrid=True, gridcolor='#FFE0B2', tickfont=dict(color='#000000')),
+            yaxis=dict(title="", tickfont=dict(color='#000000')),
             height=200,
             margin=dict(l=0, r=0, t=10, b=0),
             plot_bgcolor='#FFF9F0',
             paper_bgcolor='#FFF9F0',
-            font=dict(family='Poppins', size=12, color='#3E2723')
+            font=dict(family='Poppins', size=12, color='#000000')
         )
         st.plotly_chart(fig_traits, use_container_width=True)
 
@@ -1359,7 +1522,7 @@ def main():
                 marker_line_width=2,
                 texttemplate='%{text:.1f}%',
                 textposition='outside',
-                textfont=dict(size=12, color='#3E2723', family='Poppins', weight=700)
+                textfont=dict(size=12, color='#000000', family='Poppins', weight=700)
             )
             fig_compat.update_layout(
                 height=300,
@@ -1368,9 +1531,9 @@ def main():
                 yaxis_title="Match %",
                 plot_bgcolor='#FFF9F0',
                 paper_bgcolor='#FFF9F0',
-                font=dict(family='Poppins', size=11, color='#3E2723'),
-                xaxis=dict(showgrid=False),
-                yaxis=dict(showgrid=True, gridcolor='#FFE0B2')
+                font=dict(family='Poppins', size=11, color='#000000'),
+                xaxis=dict(showgrid=False, tickfont=dict(color='#000000')),
+                yaxis=dict(showgrid=True, gridcolor='#FFE0B2', tickfont=dict(color='#000000'))
             )
             st.plotly_chart(fig_compat, use_container_width=True)
 
@@ -1456,7 +1619,7 @@ def main():
             marker_line_color='#6D4C41',
             marker_line_width=2,
             textposition='outside',
-            textfont=dict(size=12, color='#3E2723', family='Poppins', weight=700)
+            textfont=dict(size=12, color='#000000', family='Poppins', weight=700)
         )
         fig_clubs.update_layout(
             height=230,
@@ -1466,9 +1629,9 @@ def main():
             margin=dict(l=0, r=0, t=0, b=0),
             plot_bgcolor='#FFF9F0',
             paper_bgcolor='#FFF9F0',
-            font=dict(family='Poppins', size=10, color='#3E2723'),
-            xaxis=dict(showgrid=False, showticklabels=False),
-            yaxis=dict(showgrid=False)
+            font=dict(family='Poppins', size=10, color='#000000'),
+            xaxis=dict(showgrid=False, showticklabels=False, tickfont=dict(color='#000000')),
+            yaxis=dict(showgrid=False, tickfont=dict(color='#000000'))
         )
         st.plotly_chart(fig_clubs, use_container_width=True)
 
