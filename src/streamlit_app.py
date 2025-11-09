@@ -919,7 +919,7 @@ def train_model_if_needed():
         df_encoded = pd.get_dummies(df_clean, columns=categorical_cols, prefix=categorical_cols)
         
         # Clustering
-        feature_cols = [col for col in df_encoded.columns if col not in ['student_id']]
+        feature_cols = [col for col in df_encoded.columns if col not in ['student_id', 'timestamp']]
         X = df_encoded[feature_cols].values
         
         kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
